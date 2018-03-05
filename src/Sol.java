@@ -1,7 +1,10 @@
 import java.util.Arrays;
 
+/**Soluçao do problema de empacotamento*/
 public class Sol {
+    /**pacoto do bin i*/
     int binOf[];
+    /**referencia para o problema de empacotamento*/
     private BPP bpp;
 
     public Sol(BPP bpp) {
