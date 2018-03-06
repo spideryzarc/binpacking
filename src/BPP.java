@@ -6,23 +6,31 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class BPP {
-    /**tamanho de cada item*/
+    /**
+     * tamanho de cada item
+     */
     int size[];
-    /**quantidade de itens*/
+    /**
+     * quantidade de itens
+     */
     int N;
-    /**capacidade dos pacotes*/
+    /**
+     * capacidade dos pacotes
+     */
     int C;
 
     @Override
     public String toString() {
         return "BPP{" +
-                "size=" + Arrays.toString(size) +
-                ", N=" + N +
+                "N=" + N +
                 ", C=" + C +
+                ", size=" + Arrays.toString(size) +
                 '}';
     }
 
-    /**abrir arquivo path*/
+    /**
+     * abrir arquivo path
+     */
     public BPP(String path) throws FileNotFoundException {
         Scanner sc = new Scanner(new FileInputStream(path));
         N = sc.nextInt();
@@ -36,4 +44,15 @@ public class BPP {
 
     public BPP() {
     }
+
+    /**
+     * limite inferior para o numero de pacotes
+     */
+    public int LB() {
+        int s = 0;
+        for (int i = 0; i < N; i++)
+            s += size[i];
+        return (int) Math.ceil((double) s / C);
+    }
+
 }
