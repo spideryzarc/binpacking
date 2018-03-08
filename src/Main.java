@@ -6,15 +6,16 @@ public class Main {
         System.out.println(bpp);
         System.out.println("LB: "+bpp.LB());
         Sol sol = new Sol(bpp);
-        int s = sol.bestFit();
+
+        int s = sol.worstFit();
         System.out.println(sol);
 
-        s = sol.worstFit();
+        HillClimbing hc = new HillClimbing(bpp,sol);
+        hc.run();
+
         System.out.println(sol);
 
-        //for (int i = 0; i < s; i++) {
-        //    System.out.println(sol.load(i));
-        //}
+
 
     }
 }
