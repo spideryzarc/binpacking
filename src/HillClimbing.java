@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 import static java.util.Arrays.fill;
 import static java.util.Arrays.stream;
 
@@ -15,19 +13,13 @@ public class HillClimbing {
     /**
      * função de avaliação
      */
-//    public int fa(int[] load) {
-//        int min = load[0];
-//        for (int i = 1; i < load.length; i++)
-//            if (min > load[i])
-//                min = load[i];
-//        return min;
-//    }
-
-    public double fa(int[] load, double avg) { // desvio
+    public double stdDev(int[] load, double avg) { // desvio
         double soma = 0;
-        for (int i = 0; i < load.length; i++)
-            soma+= (load[i]-avg)*(load[i]-avg);
-        return -soma;
+        for (int i = 0; i < load.length; i++) {
+            double x = (load[i] - avg);
+            soma += x * x;
+        }
+        return soma;
     }
 
     public int run() {
@@ -37,8 +29,8 @@ public class HillClimbing {
         int size[] = bpp.size;
         for (int i = 0; i < binof.length; i++)
             load[binof[i]] += size[i];
-        double avg = (double)bpp.sizeSum/count;
-        double a = fa(load,avg);
+        double avg = (double) bpp.sizeSum / count;
+        double a = stdDev(load, avg);
 
         boolean moved;
         //hillclimb
@@ -52,35 +44,38 @@ public class HillClimbing {
                     if (bi != j && load[j] + size[i] <= bpp.C) {
                         load[j] += size[i];
                         load[bi] -= size[i];
-                        double x = fa(load,avg);
-                        if (x < a) {
+                        double x = stdDev(load, avg);
+                        if (x > a) {
                             binof[i] = j;
                             a = x;
-//                            System.out.println("fa: " + a);
-                            if (load[bi] == 0) {
-                                //pacote vazio
-//                                System.out.println("Oba!");
+
+                            if (load[bi] == 0) { //pacote vazio
+
+                                //elemina pacote vazio
                                 for (int k = 0; k < binof.length; k++)
                                     if (binof[k] > bi)
                                         binof[k]--;
                                 count--;
+
+                                //atualiza vetor load
                                 load = new int[count];
                                 for (int k = 0; k < binof.length; k++)
                                     load[binof[k]] += size[k];
-                                avg = (double)bpp.sizeSum/count;
-                                a = fa(load,avg);
+
+                                //atualiza média e avaliação corrente
+                                avg = (double) bpp.sizeSum / count;
+                                a = stdDev(load, avg);
+
                             }
                             moved = true;
                             break ls;
-                        }else{
+                        } else {
                             load[j] -= size[i];
                             load[bi] += size[i];
                         }
                     }
             }
         } while (moved);
-
-
 
 
         return count;
