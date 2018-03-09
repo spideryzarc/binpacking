@@ -15,12 +15,19 @@ public class HillClimbing {
     /**
      * função de avaliação
      */
-    public int fa(int[] load) {
-        int min = load[0];
-        for (int i = 1; i < load.length; i++)
-            if (min > load[i])
-                min = load[i];
-        return min;
+//    public int fa(int[] load) {
+//        int min = load[0];
+//        for (int i = 1; i < load.length; i++)
+//            if (min > load[i])
+//                min = load[i];
+//        return min;
+//    }
+
+    public double fa(int[] load, double avg) { // desvio
+        double soma = 0;
+        for (int i = 0; i < load.length; i++)
+            soma+= (load[i]-avg)*(load[i]-avg);
+        return -soma;
     }
 
     public int run() {
@@ -30,7 +37,8 @@ public class HillClimbing {
         int size[] = bpp.size;
         for (int i = 0; i < binof.length; i++)
             load[binof[i]] += size[i];
-        int a = fa(load);
+        double avg = (double)bpp.sizeSum/count;
+        double a = fa(load,avg);
 
         boolean moved;
         //hillclimb
@@ -42,16 +50,16 @@ public class HillClimbing {
                 int bi = binof[i];
                 for (int j = 0; j < count; j++)
                     if (bi != j && load[j] + size[i] <= bpp.C) {
-                        int x = load[bi] - size[i];
+                        load[j] += size[i];
+                        load[bi] -= size[i];
+                        double x = fa(load,avg);
                         if (x < a) {
-                            load[j] += size[i];
-                            load[bi] -= size[i];
                             binof[i] = j;
                             a = x;
-                            System.out.println("fa: " + a);
-                            if (a == 0) {
+//                            System.out.println("fa: " + a);
+                            if (load[bi] == 0) {
                                 //pacote vazio
-                                System.out.println("Oba!");
+//                                System.out.println("Oba!");
                                 for (int k = 0; k < binof.length; k++)
                                     if (binof[k] > bi)
                                         binof[k]--;
@@ -59,19 +67,23 @@ public class HillClimbing {
                                 load = new int[count];
                                 for (int k = 0; k < binof.length; k++)
                                     load[binof[k]] += size[k];
-                                a = fa(load);
+                                avg = (double)bpp.sizeSum/count;
+                                a = fa(load,avg);
                             }
                             moved = true;
                             break ls;
+                        }else{
+                            load[j] -= size[i];
+                            load[bi] += size[i];
                         }
                     }
             }
         } while (moved);
 
-        System.out.println(Arrays.toString(load));
 
 
-        return a;
+
+        return count;
     }
 
 }

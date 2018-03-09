@@ -90,4 +90,32 @@ public class Sol {
         return binCount;
     }
 
+    public int bestFitRandom(int idx[]) {
+        fill(binOf, -1);
+        int binCount = 0;
+
+        for (int a = 0; a < bpp.N; a++) {
+            int i = idx[a];
+            if (binOf[i] == -1) {
+                int residuo = bpp.C - bpp.size[i];
+                binOf[i] = binCount;
+                for (int b = a + 1; b < bpp.N; b++) {
+                    int j = idx[b];
+                    if (binOf[j] == -1 && bpp.size[j] <= residuo) {
+                        binOf[j] = binCount;
+                        residuo -= bpp.size[j];
+                    }
+                }
+                binCount++;
+            }
+        }
+        return binCount;
+    }
+
+    public void copy(Sol s){
+        for (int i = 0; i < binOf.length; i++) {
+            binOf[i] = s.binOf[i];
+        }
+    }
+
 }

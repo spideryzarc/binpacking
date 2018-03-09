@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Arrays;
 import java.util.Scanner;
-
+/**os itens devem estar ordenados em ordem decrescente*/
 public class BPP {
     /**
      * tamanho de cada item
@@ -18,6 +18,8 @@ public class BPP {
      * capacidade dos pacotes
      */
     int C;
+    /**Soma dos pesos dos itens */
+    int sizeSum;
 
     @Override
     public String toString() {
@@ -36,8 +38,11 @@ public class BPP {
         N = sc.nextInt();
         C = sc.nextInt();
         size = new int[N];
-        for (int i = 0; i < N; i++)
+        sizeSum = 0;
+        for (int i = 0; i < N; i++) {
             size[i] = sc.nextInt();
+            sizeSum+=size[i];
+        }
 
         sc.close();
     }
