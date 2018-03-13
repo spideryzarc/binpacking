@@ -1,21 +1,38 @@
 import static java.util.Arrays.fill;
 
-/**Iterated Local Search*/
-public class ILS {
-    BPP bpp;
-    Sol sol;
-    int idx[];
+/**
+ * Iterated Local Search
+ */
+public class ILS implements Solver {
+    private int k;
+    private BPP bpp;
+    private Sol bestSol;
+    private int idx[];
+    public int ite;
 
-    public ILS(BPP bpp, Sol sol) {
+
+    /**
+     * @param ite número de iterações
+     * @param k   número de pacotes alterados a cada nova iteração
+     */
+    public ILS(int ite, int k) {
+        this.ite = ite;
+        this.k = k;
+    }
+
+    @Override
+    public void setBPP(BPP bpp) {
         this.bpp = bpp;
-        this.sol = sol;
+        this.bestSol = new Sol(bpp);
         idx = new int[bpp.N];
         for (int i = 0; i < idx.length; i++)
             idx[i] = i;
-
     }
 
-    public int bestFit(Sol current) {
+    /**
+     * empacote os itens sem pacote (binof == -1) em ordem randomica
+     */
+    public int fit(Sol current) {
         int binOf[] = current.binOf;
         int binCount = current.binCount();
         Utils.shuffler(idx);
@@ -37,21 +54,29 @@ public class ILS {
         return binCount;
     }
 
-    private void pertub(int k,Sol current, Sol best){
+    /**
+     * Elimina k pacotes aleatórios e reempacotas seus itens em ordem aleatória
+     *
+     * @param k       numero de pacotes eliminados
+     * @param current saída com solução best pertubada
+     * @param best    solução de entrada
+     */
+    private void pertub(int k, Sol current, Sol best) {
         current.copy(best);
         int n = current.binCount();
         for (int i = 0; i < k; i++) {
             int x = Utils.rd.nextInt(n);
             for (int j = 0; j < bpp.N; j++)
-                if(current.binOf[j] == x)
+                if (current.binOf[j] == x)
                     current.binOf[j] = -1;
-                else if(current.binOf[j] > x)
+                else if (current.binOf[j] > x)
                     current.binOf[j]--;
         }
-        bestFit(current);
+        fit(current);
     }
 
-    public int run(int ite, int k) {
+    @Override
+    public int run() {
         Sol current = new Sol(bpp);
         HillClimbing hc = new HillClimbing(bpp, current);
 
@@ -59,23 +84,36 @@ public class ILS {
         current.bestFitRandom(idx);
         int best = hc.run();
 
-        sol.copy(current);
+        bestSol.copy(current);
 
         for (int i = 1; i < ite; i++) {
 
-            pertub(k,current,sol);
+            pertub(k, current, bestSol);
 
             int x = hc.run();
 
             if (x < best) {
                 best = x;
-                sol.copy(current);
-                System.out.println(i + " ILS: " + x);
+                bestSol.copy(current);
+//                System.out.println(i + " ILS: " + x);
                 //i = -1;
             }
         }
-        System.out.println(best);
+//        System.out.println(best);
         return best;
+    }
+
+    @Override
+    public String toString() {
+        return "ILS{" +
+                "k=" + k +
+                ", ite=" + ite +
+                '}';
+    }
+
+    @Override
+    public Sol getSol() {
+        return bestSol;
     }
 
 }

@@ -1,35 +1,55 @@
-public class RMS {
-    BPP bpp;
-    Sol sol;
-    int idx[];
+public class RMS implements Solver {
+    private BPP bpp;
+    private Sol bestSol;
+    private int idx[];
+    int ite = 100;
 
-    public RMS(BPP bpp, Sol sol) {
+    @Override
+    public String toString() {
+        return "RMS{" +
+                "ite=" + ite +
+                '}';
+    }
+
+    /**
+     * @param ite numero de iterações
+     */
+
+    public RMS(int ite) {
+        this.ite = ite;
+    }
+
+    public void setBPP(BPP bpp) {
         this.bpp = bpp;
-        this.sol = sol;
+        this.bestSol = new Sol(bpp);
         idx = new int[bpp.N];
         for (int i = 0; i < idx.length; i++) {
             idx[i] = i;
         }
     }
 
-    public int run(int ite) {
+    public Sol getSol() {
+        return bestSol;
+    }
+
+    public int run() {
         Sol current = new Sol(bpp);
         HillClimbing hc = new HillClimbing(bpp, current);
         int best = Integer.MAX_VALUE;
         for (int i = 0; i < ite; i++) {
 
             Utils.shuffler(idx);
-            int x = current.bestFitRandom(idx);
-            x = hc.run();
+            current.bestFitRandom(idx);
+            int x = hc.run();
 
             if (x < best) {
                 best = x;
-                sol.copy(current);
-                System.out.println(i+ " RMS: " + x);
+                bestSol.copy(current);
+                //System.out.println(i + " RMS: " + x);
                 //i = -1;
             }
         }
-        System.out.println(best);
+//        System.out.println(best);
         return best;
     }
 

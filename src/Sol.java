@@ -93,7 +93,6 @@ public class Sol {
     public int bestFitRandom(int idx[]) {
         fill(binOf, -1);
         int binCount = 0;
-
         for (int a = 0; a < bpp.N; a++) {
             int i = idx[a];
             if (binOf[i] == -1) {

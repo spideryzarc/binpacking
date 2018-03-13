@@ -1,7 +1,10 @@
-/**Variable Neighborhood Descendent*/
+/**
+ * Variable Neighborhood Descendent
+ */
 public class VND {
-    BPP bpp;
-    Sol sol;
+
+    private BPP bpp;
+    private Sol sol;
 
     public VND(BPP bpp, Sol sol) {
         this.bpp = bpp;
@@ -20,17 +23,11 @@ public class VND {
         return soma;
     }
 
-    boolean move1(){
-        int count = sol.binCount();
-        int load[] = new int[count];
-        int binof[] = sol.binOf;
-        int size[] = bpp.size;
-        for (int i = 0; i < binof.length; i++)
-            load[binof[i]] += size[i];
-        double avg = (double) bpp.sizeSum / count;
-        double a = stdDev(load, avg);
+    /**
+     * um item troca de pacote
+     */
+    boolean move1() {
 
-        boolean moved;
 
         for (int i = 0; i < binof.length; i++) {
             int bi = binof[i];
@@ -38,11 +35,10 @@ public class VND {
                 if (bi != j && load[j] + size[i] <= bpp.C) {
                     load[j] += size[i];
                     load[bi] -= size[i];
-                    double x = stdDev(load, avg);
-                    if (x > a) {
+                    double x = stdDev(load, avg);//dá pra otimizar depois
+                    if (x > dev) {
                         binof[i] = j;
-                        a = x;
-
+                        dev = x;
                         if (load[bi] == 0) { //pacote vazio
 
                             //elemina pacote vazio
@@ -58,8 +54,9 @@ public class VND {
 
                             //atualiza média e avaliação corrente
                             avg = (double) bpp.sizeSum / count;
-                            a = stdDev(load, avg);
+                            dev = stdDev(load, avg);
 
+                            System.out.println("mv1: " + count);
                         }
                         return true;
                     } else {
@@ -73,29 +70,47 @@ public class VND {
         return false;
     }
 
-    boolean move2(){
+    /**
+     * dois itens em pacotes diferentes trocam de lugar entre si
+     */
+    boolean move2() {
 
         return false;
     }
 
-    boolean move3(){
+    boolean move3() {
 
         return false;
     }
 
-    int run(){
+    private int count;
+    private int load[];
+    private int binof[];
+    private int size[];
+    private double avg, dev;
+
+    int run() {
+
+        count = sol.binCount();
+        load = new int[count];
+        binof = sol.binOf;
+        size = bpp.size;
+        for (int i = 0; i < binof.length; i++)
+            load[binof[i]] += size[i];
+        avg = (double) bpp.sizeSum / count;
+        dev = stdDev(load, avg);
 
         boolean flag;
-        do{
+        do {
             flag = move1();
-            if(!flag)
+            if (!flag)
                 flag = move2();
-            if(!flag)
+            if (!flag)
                 flag = move3();
 
             //System.out.println("VND: ");
 
-        }while(flag);
+        } while (flag);
 
         return sol.binCount();
     }
