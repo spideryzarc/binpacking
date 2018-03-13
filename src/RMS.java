@@ -25,8 +25,8 @@ public class RMS {
             if (x < best) {
                 best = x;
                 sol.copy(current);
-                System.out.println("RMS: " + x);
-                i = -1;
+                System.out.println(i+ " RMS: " + x);
+                //i = -1;
             }
         }
         System.out.println(best);
