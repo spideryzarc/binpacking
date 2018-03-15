@@ -36,9 +36,15 @@ public class Main {
 
     public static void main(String args[]) throws FileNotFoundException {
 
-        benchmark("instances/", new RMS(1000));
-        benchmark("instances/", new ILS(1000, 5));
-        benchmark("instances/", new ILS(1000, 3));
+//        benchmark("instances/", new RMS(10));
+        benchmark("instances/", new ILS(10, 5));
+        benchmark("instances/", new ILS(10, 30));
+
+//        BPP bpp = new BPP("instances/N4W2B1R4.txt");
+//        Sol sol = new Sol(bpp);
+//        sol.worstFit();
+//        VND vnd = new VND(bpp,sol);
+//        vnd.run();
 
 
     }

@@ -78,11 +78,11 @@ public class ILS implements Solver {
     @Override
     public int run() {
         Sol current = new Sol(bpp);
-        HillClimbing hc = new HillClimbing(bpp, current);
+        VND vnd = new VND(bpp, current);
 
         Utils.shuffler(idx);
         current.bestFitRandom(idx);
-        int best = hc.run();
+        int best = vnd.run();
 
         bestSol.copy(current);
 
@@ -90,7 +90,7 @@ public class ILS implements Solver {
 
             pertub(k, current, bestSol);
 
-            int x = hc.run();
+            int x = vnd.run();
 
             if (x < best) {
                 best = x;

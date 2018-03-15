@@ -19,13 +19,13 @@ public class RMS implements Solver {
         this.ite = ite;
     }
 
+    @Override
     public void setBPP(BPP bpp) {
         this.bpp = bpp;
         this.bestSol = new Sol(bpp);
         idx = new int[bpp.N];
-        for (int i = 0; i < idx.length; i++) {
+        for (int i = 0; i < idx.length; i++)
             idx[i] = i;
-        }
     }
 
     public Sol getSol() {
@@ -34,13 +34,13 @@ public class RMS implements Solver {
 
     public int run() {
         Sol current = new Sol(bpp);
-        HillClimbing hc = new HillClimbing(bpp, current);
+        VND vnd = new VND(bpp, current);
         int best = Integer.MAX_VALUE;
         for (int i = 0; i < ite; i++) {
 
             Utils.shuffler(idx);
             current.bestFitRandom(idx);
-            int x = hc.run();
+            int x = vnd.run();
 
             if (x < best) {
                 best = x;

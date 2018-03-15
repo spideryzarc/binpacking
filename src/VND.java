@@ -28,7 +28,6 @@ public class VND {
      */
     boolean move1() {
 
-
         for (int i = 0; i < binof.length; i++) {
             int bi = binof[i];
             for (int j = 0; j < count; j++)
@@ -56,7 +55,7 @@ public class VND {
                             avg = (double) bpp.sizeSum / count;
                             dev = stdDev(load, avg);
 
-                            System.out.println("mv1: " + count);
+                            //System.out.println("mv1: " + count);
                         }
                         return true;
                     } else {
@@ -74,6 +73,31 @@ public class VND {
      * dois itens em pacotes diferentes trocam de lugar entre si
      */
     boolean move2() {
+        final int N = binof.length;
+        for (int i = 0; i < N; i++) {
+            for (int j = i+1; j < N; j++)
+            if(binof[i]!=binof[j] &&
+                    load[binof[i]]-size[i]+size[j] <= bpp.C &&
+                    load[binof[j]]-size[j]+size[i] <= bpp.C){
+
+                load[binof[i]]+= -size[i]+size[j];
+                load[binof[j]]+= -size[j]+size[i];
+                double x = stdDev(load,avg);
+                if(x > dev){
+                    int aux = binof[i];
+                    binof[i] = binof[j];
+                    binof[j] = aux;
+                    dev = x;
+                    //System.out.println("MV2 "+x);
+                    return true;
+                }else{
+                    load[binof[i]]-= -size[i]+size[j];
+                    load[binof[j]]-= -size[j]+size[i];
+                }
+
+            }
+
+        }
 
         return false;
     }
@@ -99,6 +123,9 @@ public class VND {
             load[binof[i]] += size[i];
         avg = (double) bpp.sizeSum / count;
         dev = stdDev(load, avg);
+
+
+        //VND
 
         boolean flag;
         do {
