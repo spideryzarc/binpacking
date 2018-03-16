@@ -27,7 +27,7 @@ public class Main {
             t = System.currentTimeMillis() - t;
             time += t;
             gap += x / lb - 1;
-            System.out.println(count + " - " + f + ": " + (x / lb - 1) + " T: " + t);
+            System.out.println(count + " - " + x +"  " +f + ": " + (x / lb - 1) + " T: " + t);
         }
         System.out.printf("%s\t %.2f\t %d\n", solver, 100 * gap / count, time / count);
 
@@ -37,8 +37,8 @@ public class Main {
     public static void main(String args[]) throws FileNotFoundException {
 
 //        benchmark("instances/", new RMS(10));
-        benchmark("instances/", new ILS(10, 5));
-        benchmark("instances/", new ILS(10, 30));
+        benchmark("instances/", new VNS(10,10,1));
+        benchmark("in'stances/", new VNS(10,10,2));
 
 //        BPP bpp = new BPP("instances/N4W2B1R4.txt");
 //        Sol sol = new Sol(bpp);
