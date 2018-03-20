@@ -49,8 +49,8 @@ public class GRASP implements Solver {
                     }
                     if(s>0) {
                         int x = Utils.rd.nextInt(s);
-                        binOf[x] = binCount;
-                        residuo -= bpp.size[x];
+                        binOf[candidato[x]] = binCount;
+                        residuo -= bpp.size[candidato[x]];
                     }
                 }while(s>1);
                 binCount++;
