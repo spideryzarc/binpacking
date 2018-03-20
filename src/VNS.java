@@ -101,7 +101,7 @@ public class VNS implements Solver {
                 pertub(k, current, bestSol);
                 int x = vnd.run();
                 if (x < best) {
-                    System.out.println(k + " VNS: " + x);
+//                    System.out.println(k + " VNS: " + x);
                     best = x;
                     bestSol.copy(current);
                     k = 2;

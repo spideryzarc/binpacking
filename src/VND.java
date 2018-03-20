@@ -7,10 +7,16 @@ public class VND {
 
     private BPP bpp;
     private Sol sol;
+    private int bidx[], idx[], lb;
 
     public VND(BPP bpp, Sol sol) {
         this.bpp = bpp;
         this.sol = sol;
+        idx = new int[bpp.N];
+        for (int i = 0; i < idx.length; i++)
+            idx[i] = i;
+        int lb = bpp.LB();
+
     }
 
     /**
@@ -24,9 +30,8 @@ public class VND {
 //        }
 //        return soma;
 //    }
-
     public double stdDevOptDelta(int i, int bi, int bj) { // desvio
-        return  size[i] * 2 * (load[bj] + size[i] - load[bi]);
+        return size[i] * 2 * (load[bj] + size[i] - load[bi]);
     }
 
 
@@ -35,9 +40,9 @@ public class VND {
      */
     boolean move1() {
 
-        for (int i = 0; i < binof.length; i++) {
+        for (int i : idx) {
             int bi = binof[i];
-            for (int bj = 0; bj < count; bj++)
+            for (int bj : bidx)
                 if (bi != bj && load[bj] + size[i] <= bpp.C) {
                     double x = stdDevOptDelta(i, bi, bj);
                     if (x > Utils.eps) {
@@ -58,6 +63,9 @@ public class VND {
                                 load[binof[k]] += size[k];
 
 //                            System.out.println("mv1: " + count);
+                            bidx = new int[count];
+                            for (int z = 0; z < count; z++)
+                                bidx[z] = z;
                         }
 //                        System.out.println("mv1: " + x);
                         return true;
@@ -79,8 +87,10 @@ public class VND {
      */
     boolean move2() {
         final int N = binof.length;
-        for (int i = 0; i < N; i++) {
-            for (int j = i + 1; j < N; j++)
+        for (int a = 0; a < N; a++) {
+            int i = idx[a];
+            for (int b = a + 1; b < N; b++) {
+                int j = idx[b];
                 if (binof[i] != binof[j] &&
                         load[binof[i]] - size[i] + size[j] <= bpp.C &&
                         load[binof[j]] - size[j] + size[i] <= bpp.C) {
@@ -96,8 +106,8 @@ public class VND {
 //                        System.out.println("MV2 "+x);
                         return true;
                     }
-
                 }
+            }
 
         }
 
@@ -124,11 +134,18 @@ public class VND {
         for (int i = 0; i < binof.length; i++)
             load[binof[i]] += size[i];
 
+        bidx = new int[count];
+        for (int i = 0; i < count; i++)
+            bidx[i] = i;
+
 
         //VND
 
         boolean flag;
         do {
+            Utils.shuffler(bidx);
+            Utils.shuffler(idx);
+
             flag = move1();
             if (!flag)
                 flag = move2();
@@ -137,8 +154,7 @@ public class VND {
 
 
 //            System.out.println("VND: "+dev);
-        } while (flag);
-
+        } while (flag && count > lb);
 
 
         return sol.binCount();
