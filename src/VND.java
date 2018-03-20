@@ -1,3 +1,5 @@
+import static java.lang.Math.abs;
+
 /**
  * Variable Neighborhood Descendent
  */
@@ -14,31 +16,20 @@ public class VND {
     /**
      * função de avaliação
      */
-    public double stdDev(int[] load, double avg) { // desvio
-        double soma = 0;
-        for (int i = 0; i < load.length; i++) {
-            double x = (load[i] - avg);
-            soma += x * x;
-        }
-        return soma;
+//    public double stdDev() { // desvio
+//        double soma = 0;
+//        for (int i = 0; i < load.length; i++) {
+//            double x = (load[i] - avg);
+//            soma += x * x;
+//        }
+//        return soma;
+//    }
+
+    public double stdDevOptDelta(int i, int bi, int bj) { // desvio
+        return  size[i] * 2 * (load[bj] + size[i] - load[bi]);
     }
 
-    public double stdDevOpt(int[] load,int i ,int bi, int j, double avg, double dev) { // desvio
-        double x = (avg-load[j]);
-        x = x*x;
-        double y = (avg-(load[j]+size[i]));
-        y=y*y;
-        dev +=  y-x;
 
-        x = (avg-load[bi]);
-        x = x*x;
-        y = (avg-(load[j]-size[i]));
-        y=y*y;
-
-        dev += y-x;
-
-        return dev;
-    }
     /**
      * um item troca de pacote
      */
@@ -46,18 +37,13 @@ public class VND {
 
         for (int i = 0; i < binof.length; i++) {
             int bi = binof[i];
-            for (int j = 0; j < count; j++)
-                if (bi != j && load[j] + size[i] <= bpp.C) {
-                    //double tmp = stdDevOpt(load,i,bi,j,avg,dev);
-                    load[j] += size[i];
-                    load[bi] -= size[i];
-                    double x = stdDev(load, avg);//dá pra otimizar depois
-//                    if(x != tmp){
-//                        System.err.println("OPA!! "+(x-tmp));
-//                    }
-                    if (x > dev) {
-                        binof[i] = j;
-                        dev = x;
+            for (int bj = 0; bj < count; bj++)
+                if (bi != bj && load[bj] + size[i] <= bpp.C) {
+                    double x = stdDevOptDelta(i, bi, bj);
+                    if (x > Utils.eps) {
+                        load[bj] += size[i];
+                        load[bi] -= size[i];
+                        binof[i] = bj;
                         if (load[bi] == 0) { //pacote vazio
 
                             //elemina pacote vazio
@@ -71,16 +57,10 @@ public class VND {
                             for (int k = 0; k < binof.length; k++)
                                 load[binof[k]] += size[k];
 
-                            //atualiza média e avaliação corrente
-                            avg = (double) bpp.sizeSum / count;
-                            dev = stdDev(load, avg);
-
-                            //System.out.println("mv1: " + count);
+//                            System.out.println("mv1: " + count);
                         }
+//                        System.out.println("mv1: " + x);
                         return true;
-                    } else {
-                        load[j] -= size[i];
-                        load[bi] += size[i];
                     }
                 }
         }
@@ -89,33 +69,35 @@ public class VND {
         return false;
     }
 
+
+    public double stdDevOptDelta(int i, int bi, int j, int bj) { // desvio
+        return 2 * (size[i] * (load[bj] + size[i] - 2 * size[j]) + size[j] * (size[j] - load[bj]) + load[bi] * (size[j] - size[i]));
+    }
+
     /**
      * dois itens em pacotes diferentes trocam de lugar entre si
      */
     boolean move2() {
         final int N = binof.length;
         for (int i = 0; i < N; i++) {
-            for (int j = i+1; j < N; j++)
-            if(binof[i]!=binof[j] &&
-                    load[binof[i]]-size[i]+size[j] <= bpp.C &&
-                    load[binof[j]]-size[j]+size[i] <= bpp.C){
+            for (int j = i + 1; j < N; j++)
+                if (binof[i] != binof[j] &&
+                        load[binof[i]] - size[i] + size[j] <= bpp.C &&
+                        load[binof[j]] - size[j] + size[i] <= bpp.C) {
 
-                load[binof[i]]+= -size[i]+size[j];
-                load[binof[j]]+= -size[j]+size[i];
-                double x = stdDev(load,avg);
-                if(x > dev){
-                    int aux = binof[i];
-                    binof[i] = binof[j];
-                    binof[j] = aux;
-                    dev = x;
-                    //System.out.println("MV2 "+x);
-                    return true;
-                }else{
-                    load[binof[i]]-= -size[i]+size[j];
-                    load[binof[j]]-= -size[j]+size[i];
+                    double x = stdDevOptDelta(i, binof[i], j, binof[j]);
+
+                    if (x > Utils.eps) {
+                        load[binof[i]] += -size[i] + size[j];
+                        load[binof[j]] += -size[j] + size[i];
+                        int aux = binof[i];
+                        binof[i] = binof[j];
+                        binof[j] = aux;
+//                        System.out.println("MV2 "+x);
+                        return true;
+                    }
+
                 }
-
-            }
 
         }
 
@@ -131,7 +113,7 @@ public class VND {
     private int load[];
     private int binof[];
     private int size[];
-    private double avg, dev;
+
 
     int run() {
 
@@ -141,8 +123,6 @@ public class VND {
         size = bpp.size;
         for (int i = 0; i < binof.length; i++)
             load[binof[i]] += size[i];
-        avg = (double) bpp.sizeSum / count;
-        dev = stdDev(load, avg);
 
 
         //VND
@@ -155,9 +135,11 @@ public class VND {
             if (!flag)
                 flag = move3();
 
-            //System.out.println("VND: ");
 
+//            System.out.println("VND: "+dev);
         } while (flag);
+
+
 
         return sol.binCount();
     }
