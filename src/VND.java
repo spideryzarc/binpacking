@@ -23,6 +23,22 @@ public class VND {
         return soma;
     }
 
+    public double stdDevOpt(int[] load,int i ,int bi, int j, double avg, double dev) { // desvio
+        double x = (avg-load[j]);
+        x = x*x;
+        double y = (avg-(load[j]+size[i]));
+        y=y*y;
+        dev +=  y-x;
+
+        x = (avg-load[bi]);
+        x = x*x;
+        y = (avg-(load[j]-size[i]));
+        y=y*y;
+
+        dev += y-x;
+
+        return dev;
+    }
     /**
      * um item troca de pacote
      */
@@ -32,9 +48,13 @@ public class VND {
             int bi = binof[i];
             for (int j = 0; j < count; j++)
                 if (bi != j && load[j] + size[i] <= bpp.C) {
+                    //double tmp = stdDevOpt(load,i,bi,j,avg,dev);
                     load[j] += size[i];
                     load[bi] -= size[i];
                     double x = stdDev(load, avg);//dá pra otimizar depois
+//                    if(x != tmp){
+//                        System.err.println("OPA!! "+(x-tmp));
+//                    }
                     if (x > dev) {
                         binof[i] = j;
                         dev = x;

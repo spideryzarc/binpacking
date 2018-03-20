@@ -37,8 +37,9 @@ public class Main {
     public static void main(String args[]) throws FileNotFoundException {
 
 //        benchmark("instances/", new RMS(10));
-        benchmark("instances/", new VNS(10,10,1));
-        benchmark("in'stances/", new VNS(10,10,2));
+//        benchmark("instances/", new VNS(10,10,1));
+//        benchmark("instances/", new VNS(10,10,2));
+          benchmark("instances/", new GRASP(3,10));
 
 //        BPP bpp = new BPP("instances/N4W2B1R4.txt");
 //        Sol sol = new Sol(bpp);
