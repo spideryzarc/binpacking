@@ -38,18 +38,18 @@ public class HillClimbing {
             moved = false;
             //busca local
             ls:
-            for (int i = 0; i < binof.length; i++) {
+            for (int i = 0; i < binof.length; i++) {//para todo_ item i
                 int bi = binof[i];
-                for (int j = 0; j < count; j++)
-                    if (bi != j && load[j] + size[i] <= bpp.C) {
+                for (int j = 0; j < count; j++)//para todo_ pacote j
+                    if (bi != j && load[j] + size[i] <= bpp.C) {//se ele i cabe em j
                         load[j] += size[i];
                         load[bi] -= size[i];
                         double x = stdDev(load, avg);
-                        if (x > a) {
+                        if (x > a) {// se mover i para j melhora a solução
                             binof[i] = j;
                             a = x;
 
-                            if (load[bi] == 0) { //pacote vazio
+                            if (load[bi] == 0) { //se  pacote bi ficou vazio
 
                                 //elemina pacote vazio
                                 for (int k = 0; k < binof.length; k++)
