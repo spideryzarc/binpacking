@@ -11,4 +11,16 @@ public class Utils {
             v[x] = aux;
         }
     }
+
+    /**
+     * função de avaliação
+     */
+    public static double stdDev(int[] load, double avg) {
+        double soma = 0;
+        for (int i = 0; i < load.length; i++) {
+            double x = (load[i] - avg);
+            soma += x * x;
+        }
+        return soma;
+    }
 }

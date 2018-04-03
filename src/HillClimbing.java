@@ -10,17 +10,6 @@ public class HillClimbing {
         this.sol = sol;
     }
 
-    /**
-     * função de avaliação
-     */
-    public double stdDev(int[] load, double avg) { // desvio
-        double soma = 0;
-        for (int i = 0; i < load.length; i++) {
-            double x = (load[i] - avg);
-            soma += x * x;
-        }
-        return soma;
-    }
 
     public int run() {
         int count = sol.binCount();
@@ -30,7 +19,7 @@ public class HillClimbing {
         for (int i = 0; i < binof.length; i++)
             load[binof[i]] += size[i];
         double avg = (double) bpp.sizeSum / count;
-        double a = stdDev(load, avg);
+        double a = Utils.stdDev(load, avg);
 
         boolean moved;
         //hillclimb
@@ -44,7 +33,7 @@ public class HillClimbing {
                     if (bi != j && load[j] + size[i] <= bpp.C) {//se ele i cabe em j
                         load[j] += size[i];
                         load[bi] -= size[i];
-                        double x = stdDev(load, avg);
+                        double x = Utils.stdDev(load, avg);
                         if (x > a) {// se mover i para j melhora a solução
                             binof[i] = j;
                             a = x;
@@ -64,7 +53,7 @@ public class HillClimbing {
 
                                 //atualiza média e avaliação corrente
                                 avg = (double) bpp.sizeSum / count;
-                                a = stdDev(load, avg);
+                                a = Utils.stdDev(load, avg);
 
                             }
                             moved = true;
