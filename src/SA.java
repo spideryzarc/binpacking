@@ -39,7 +39,7 @@ public class SA implements Solver{
     @Override
     public int run() {
         Sol curr = new Sol(bpp);
-        int count = curr.bestFit();
+        int count = curr.worstFit();
         bestSol = new Sol(bpp);
         bestSol.copy(curr);
         double currFA = FA(curr,count);
@@ -47,7 +47,8 @@ public class SA implements Solver{
 
         Sol aux = new Sol(bpp);
         for(double T = t0; T > tf; T*=l){
-            pertub(curr,aux,count);
+            if(!pertub(curr,aux,count))
+                continue;
             int xcount = aux.binCount();
             double x = FA(aux,xcount);
             if(x > currFA || xcount < count){
@@ -55,13 +56,19 @@ public class SA implements Solver{
                 currFA = x;
                 count = xcount;
                 if(bestCount > count){
+                    bestCount = count;
                     bestSol.copy(curr);
+                    System.out.println("SA: "+count);
+                    T = t0;
                 }
+                //System.out.println(T + " "+currFA);
             }else if(Utils.rd.nextDouble() < P(x-currFA,T)){
                 curr.copy(aux);
                 currFA = x;
+                //System.out.println(T + " "+currFA+" *");
             }
-            System.out.println(T + " "+currFA);
+
+
         }
 
 
@@ -73,14 +80,19 @@ public class SA implements Solver{
         return Math.exp(delta/t);
     }
 
-    private void pertub(Sol curr, Sol aux,int count) {
+    private boolean pertub(Sol curr, Sol aux,int count) {
         aux.copy(curr);
         int load[] = new int[count];
         for (int i = 0; i < bpp.N; i++)
             load[curr.binOf[i]] += bpp.size[i];
-        if(true || Utils.rd.nextBoolean()){ //um item troca de pacote
-            while(true) {
-                int pack = Utils.rd.nextInt(count);
+        if( Utils.rd.nextBoolean()){ //um item troca de pacote
+            int idx[] = new int[count];
+            for (int i = 0; i < count; i++)
+                idx[i] = i;
+            Utils.shuffler(idx);
+
+            for(int pack : idx){
+                //int pack = Utils.rd.nextInt(count);
                 int sobra = bpp.C - load[pack];
                 int x;
                 for (x = bpp.N - 1; x >= 0 && bpp.size[x] <= sobra; x--) {
@@ -100,14 +112,34 @@ public class SA implements Solver{
                                 if (aux.binOf[k] > bi)
                                     aux.binOf[k]--;
                         }
-                        return;
+                        return true;
                     }
                 }
             }
 
-        }else{
+        }else{ // dois itens trocam de pacotes entre si
+            int idx[] = new int[bpp.N];
+            for (int i = 0; i < bpp.N; i++)
+                idx[i] = i;
+            Utils.shuffler(idx);
+            for (int a = 0; a < bpp.N; a++) {
+                int i = idx[a];
+                int bi = curr.binOf[i];
+                for (int b = 0; b < a; b++) {
+                    int j = idx[a];
+                    int bj = curr.binOf[j];
 
+                    if(bi!=bj
+                            && load[bi]-bpp.size[i]+bpp.size[j]<= bpp.C
+                            && load[bj]-bpp.size[j]+bpp.size[i]<= bpp.C){
+                        aux.binOf[i] = bj;
+                        aux.binOf[j] = bi;
+                        return true;
+                    }
+                }
+            }
         }
+        return false;
     }
 
     @Override
