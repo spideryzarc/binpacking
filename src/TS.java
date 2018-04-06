@@ -1,8 +1,11 @@
 import java.util.LinkedList;
 
 import static java.util.Arrays.fill;
-/**Tabu Search*/
-public class TS implements Solver{
+
+/**
+ * Tabu Search
+ */
+public class TS implements Solver {
     Sol bestSol;
     BPP bpp;
     int ite, idx[], tenure;
@@ -20,51 +23,53 @@ public class TS implements Solver{
         bestSol = new Sol(bpp);
         idx = new int[bpp.N];
         for (int i = 0; i < idx.length; i++)
-            idx[i]=i;
+            idx[i] = i;
         list.clear();
     }
 
     int load[];
+
     @Override
     public int run() {
         //constroi solução inicial
         Sol sol = new Sol(bpp);
         Utils.shuffler(idx);
-        int count = sol.bestFitRandom(idx);
+        int bestCount = sol.bestFitRandom(idx);
         bestSol.copy(sol);
-        load = new int[count];
+        load = new int[bestCount];
         for (int i = 0; i < sol.binOf.length; i++)
             load[sol.binOf[i]] += bpp.size[i];
 
         for (int i = 0; i < ite; i++) {
-            hc(sol);
-            if(sol.binCount() < bestSol.binCount()){
+            int x = hc(sol);
+//            double avg = (double) bpp.sizeSum / x;
+//            double a = stdDev(load, avg);
+//            System.out.println("a " + a);
+            if (x < bestCount) {
+                bestCount = x;
                 bestSol.copy(sol);
-                System.out.println("TS: "+bestSol.binCount());
-
+                System.out.println("TS: " + bestSol.binCount());
+                list.clear();
             }
 
             addTabu(sol);
-            pertub(sol);
-
-
+            while (!pertub(sol))
+                ;
         }
 
         return bestSol.binCount();
     }
 
-    private boolean pertub(Sol curr) {
+    private boolean pertub(Sol sol) {
         int count = load.length;
-        fill(load,0);
-        for (int i = 0; i < bpp.N; i++)
-            load[curr.binOf[i]] += bpp.size[i];
-        if( Utils.rd.nextBoolean()){ //um item troca de pacote
+
+        if (Utils.rd.nextBoolean()) { //um item troca de pacote
             int idx[] = new int[count];
             for (int i = 0; i < count; i++)
                 idx[i] = i;
             Utils.shuffler(idx);
 
-            for(int pack : idx){
+            for (int pack : idx) {
                 //int pack = Utils.rd.nextInt(count);
                 int sobra = bpp.C - load[pack];
                 int x;
@@ -74,53 +79,74 @@ public class TS implements Solver{
                 int s = bpp.N - x - 1;
                 if (s > 0) {
                     int item = Utils.rd.nextInt(s) + x + 1;
-                    if (curr.binOf[item] != pack) {
-                        int bi = curr.binOf[item];
-                        curr.binOf[item] = pack;
-                        load[bi]-= bpp.size[item];
+                    if (sol.binOf[item] != pack) {
+                        int bi = sol.binOf[item];
+                        sol.binOf[item] = pack;
+                        load[bi] -= bpp.size[item];
+                        load[pack] += bpp.size[item];
+
                         //se o pacote do item esvaziar
-                        if(load[bi] == 0){
+                        if (load[bi] == 0) {
                             //elemina pacote vazio
                             for (int k = 0; k < bpp.N; k++)
-                                if (curr.binOf[k] > bi)
-                                    curr.binOf[k]--;
+                                if (sol.binOf[k] > bi)
+                                    sol.binOf[k]--;
+                            count--;
+                            load = new int[count];
+                            for (int i = 0; i < bpp.N; i++)
+                                load[sol.binOf[i]] += bpp.size[i];
+
                         }
-                        return true;
+                        if (ehTabu(sol)) {
+                            sol.binOf[item] = bi;
+                            load[bi] += bpp.size[item];
+                            load[pack] -= bpp.size[item];
+                        } else
+                            return true;
                     }
                 }
             }
 
-        }else{ // dois itens trocam de pacotes entre si
-            int idx[] = new int[bpp.N];
-            for (int i = 0; i < bpp.N; i++)
-                idx[i] = i;
-            Utils.shuffler(idx);
-            for (int a = 0; a < bpp.N; a++) {
-                int i = idx[a];
-                int bi = curr.binOf[i];
-                for (int b = 0; b < a; b++) {
-                    int j = idx[a];
-                    int bj = curr.binOf[j];
+        }
 
-                    if(bi!=bj
-                            && load[bi]-bpp.size[i]+bpp.size[j]<= bpp.C
-                            && load[bj]-bpp.size[j]+bpp.size[i]<= bpp.C){
-                        curr.binOf[i] = bj;
-                        curr.binOf[j] = bi;
-                        load[bi]+= -bpp.size[i]+bpp.size[j];
-                        load[bj]+= -bpp.size[j]+bpp.size[i];
+        // dois itens trocam de pacotes entre si
+        int idx[] = new int[bpp.N];
+        for (int i = 0; i < bpp.N; i++)
+            idx[i] = i;
+        Utils.shuffler(idx);
+        for (int a = 1; a < bpp.N; a++) {
+            int i = idx[a];
+            int bi = sol.binOf[i];
+            for (int b = 0; b < a; b++) {
+                int j = idx[b];
+                int bj = sol.binOf[j];
+
+                if (bi != bj
+                        && bpp.size[i] != bpp.size[j]
+                        && load[bi] - bpp.size[i] + bpp.size[j] <= bpp.C
+                        && load[bj] - bpp.size[j] + bpp.size[i] <= bpp.C) {
+                    sol.binOf[i] = bj;
+                    sol.binOf[j] = bi;
+                    load[bi] += -bpp.size[i] + bpp.size[j];
+                    load[bj] += -bpp.size[j] + bpp.size[i];
+                    if (ehTabu(sol)) {
+                        sol.binOf[i] = bi;
+                        sol.binOf[j] = bj;
+                        load[bi] -= -bpp.size[i] + bpp.size[j];
+                        load[bj] -= -bpp.size[j] + bpp.size[i];
+                    } else
                         return true;
-                    }
                 }
             }
         }
+
         return false;
     }
 
     /**
      * Elimina k pacotes aleatórios e reempacotas seus itens em ordem aleatória
      *
-     * @param k       numero de pacotes eliminados
+     * @param k      numero de pacotes eliminados
      * @param output saída a ser pertubada
      */
     private void pertub2(int k, Sol output) {
@@ -134,14 +160,15 @@ public class TS implements Solver{
                     output.binOf[j]--;
         }
         int count = fit(output);
-        if(count!= load.length)
+        if (count != load.length)
             load = new int[count];
         else
-            fill(load,0);
+            fill(load, 0);
         for (int i = 0; i < bpp.N; i++)
             load[output.binOf[i]] += bpp.size[i];
 
     }
+
     /**
      * empacote os itens sem pacote (binof == -1) em ordem randomica
      */
@@ -170,7 +197,7 @@ public class TS implements Solver{
     private void addTabu(Sol sol) {
         Sol aux = null;
 
-        if(list.size() < tenure)
+        if (list.size() < tenure)
             aux = new Sol(bpp);
         else
             aux = list.removeLast();
@@ -195,15 +222,14 @@ public class TS implements Solver{
     }
 
 
-
     public int hc(Sol sol) {
         int count = sol.binCount();
-
         int binof[] = sol.binOf;
         int size[] = bpp.size;
 
         double avg = (double) bpp.sizeSum / count;
         double a = stdDev(load, avg);
+//        System.out.println("a "+a);
 
         boolean moved;
         //hillclimb
@@ -219,7 +245,7 @@ public class TS implements Solver{
                         load[bi] -= size[i];
                         binof[i] = j;
                         double x = stdDev(load, avg);
-                        if (!ehTabu(sol) && x > a) {// se mover i para j melhora a solução
+                        if (x > a + 0.001 && !ehTabu(sol)) {// se mover i para j melhora a solução
                             a = x;
                             if (load[bi] == 0) { //se  pacote bi ficou vazio
                                 //elemina pacote vazio
@@ -247,29 +273,29 @@ public class TS implements Solver{
                         }
                     }
             }
-            if(!moved){
+            if (!moved) {
                 ls:
                 for (int i = 0; i < binof.length; i++) {//para todo_ item i
                     int bi = binof[i];
                     for (int j = 0; j < i; j++) {
                         int bj = binof[j];
-                        if(bi!=bj
-                                && load[bi]-bpp.size[i]+bpp.size[j]<= bpp.C
-                                && load[bj]-bpp.size[j]+bpp.size[i]<= bpp.C){
+                        if (bi != bj
+                                && load[bi] - bpp.size[i] + bpp.size[j] <= bpp.C
+                                && load[bj] - bpp.size[j] + bpp.size[i] <= bpp.C) {
                             binof[i] = bj;
                             binof[j] = bi;
-                            load[bi]+= -bpp.size[i]+bpp.size[j];
-                            load[bj]+= -bpp.size[j]+bpp.size[i];
+                            load[bi] += -bpp.size[i] + bpp.size[j];
+                            load[bj] += -bpp.size[j] + bpp.size[i];
                             double x = stdDev(load, avg);
-                            if (!ehTabu(sol) && x > a) {// se mover i para j melhora a solução
+                            if (x > a + 0.001 && !ehTabu(sol)) {// se mover i para j melhora a solução
                                 a = x;
                                 moved = true;
                                 break ls;
-                            }else {
+                            } else {
                                 binof[i] = bi;
                                 binof[j] = bj;
-                                load[bi]-= -bpp.size[i]+bpp.size[j];
-                                load[bj]-= -bpp.size[j]+bpp.size[i];
+                                load[bi] -= -bpp.size[i] + bpp.size[j];
+                                load[bj] -= -bpp.size[j] + bpp.size[i];
                             }
                         }
                     }
