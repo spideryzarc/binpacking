@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.Objects;
 
 import static java.util.Arrays.fill;
 
@@ -116,5 +117,15 @@ public class Sol {
             binOf[i] = s.binOf[i];
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Sol sol = (Sol) o;
+        return Arrays.equals(binOf, sol.binOf) &&
+                Objects.equals(bpp, sol.bpp);
+    }
+
 
 }
