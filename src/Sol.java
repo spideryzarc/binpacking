@@ -6,11 +6,43 @@ import static java.util.Arrays.fill;
 /**
  * Soluçao do problema de empacotamento
  */
-public class Sol {
+public class Sol implements Comparable<Sol>{
+
     /**
-     * pacoto do bin i
+     * pacote do bin i
      */
     int binOf[];
+
+    /**numero de pacotes usados */
+    int count;
+
+    /**desvio padrao*/
+    double stdDev;
+
+    /**somo dos pesos dos itens atribuidos a cada pacote */
+    int load[];
+
+    /**Atualiza os valores dos atributos count e stdDev*/
+    public void updateAtributes(){
+        count = 0;
+
+        for (int i = 0; i < bpp.N; i++)
+            if(count < binOf[i])
+                count = binOf[i];
+
+        load = new int[count+1];
+        for (int i = 0; i < bpp.N; i++)
+            load[binOf[i]] += bpp.size[i];
+
+        double avg = bpp.sizeSum/count;
+
+        stdDev = 0;
+        for (int i = 0; i < count; i++)
+            stdDev += (avg-load[i])*(avg-load[i]);
+
+
+    }
+
     /**
      * referencia para o problema de empacotamento
      */
@@ -116,6 +148,9 @@ public class Sol {
         for (int i = 0; i < binOf.length; i++) {
             binOf[i] = s.binOf[i];
         }
+        this.count = s.count;
+        this.stdDev = s.stdDev;
+        this.load = s.load.clone();
     }
 
     @Override
@@ -128,4 +163,11 @@ public class Sol {
     }
 
 
+    @Override
+    public int compareTo(Sol sol) {
+        if(this.count != sol.count){
+            return Integer.compare(this.count,sol.count);
+        }
+        return -Double.compare(this.stdDev,sol.stdDev);
+    }
 }

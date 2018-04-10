@@ -39,7 +39,7 @@ public class SA implements Solver{
     @Override
     public int run() {
         Sol curr = new Sol(bpp);
-        int count = curr.worstFit();
+        int count = curr.bestFit();
         bestSol = new Sol(bpp);
         bestSol.copy(curr);
         double currFA = FA(curr,count);
@@ -126,7 +126,7 @@ public class SA implements Solver{
                 int i = idx[a];
                 int bi = curr.binOf[i];
                 for (int b = 0; b < a; b++) {
-                    int j = idx[a];
+                    int j = idx[b];
                     int bj = curr.binOf[j];
 
                     if(bi!=bj

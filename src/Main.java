@@ -42,13 +42,14 @@ public class Main {
 //        String dir = "instances/Wascher";
 //        benchmark(dir, new RMS(10));
 
-//        benchmark(dir, new VNS(10,10,5));
+//        benchmark(dir, new VNS(100,10,5));
 //        benchmark(dir, new ILS(10, 100));
 //        benchmark(dir, new GRASP(50, 10));
-//          benchmark(dir, new GLS(100));
-//        benchmark(dir, new SA(100000,1,.999));
+//        benchmark(dir, new GLS(100));
+//        benchmark(dir, new SA(10000,1,.9999));
 //        benchmark(dir, new ILS(1000, 2));
-        benchmark(dir, new TS(10000,1000));
+//        benchmark(dir, new TS(100,100));
+        benchmark(dir, new GA(100,.01,5));
 
 //        BPP bpp = new BPP("instances/N4W2B1R4.txt");
 //        Sol sol = new Sol(bpp);
