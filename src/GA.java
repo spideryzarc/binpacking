@@ -1,13 +1,17 @@
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class GA implements Solver{
-    BPP bpp;
-    Sol bestSol;
-    int popSize;
-    double muteRatio;
-    int k;
+/**Algoritmo genetico*/
+public class GA implements Solver {
+    private BPP bpp;
+    private Sol bestSol;
+    private int popSize;
+    private double muteRatio;
+    private int k;
 
+    /**@param popSize tamanho da população
+     * @param muteRatio probabilidade de se aplicar uma mutação
+     * @param k número de membros por sorteio */
     public GA(int popSize, double muteRatio, int k) {
         this.popSize = popSize;
         this.muteRatio = muteRatio;
@@ -30,13 +34,12 @@ public class GA implements Solver{
         Collections.sort(pop);
 
 
-
-
         bestSol.copy(pop.get(0));
         return bestSol.count;
     }
 
 
+    /**Inicializa a população*/
     private void popIni() {
         pop.clear();
         int idx[] = new int[bpp.N];
@@ -55,5 +58,14 @@ public class GA implements Solver{
     @Override
     public Sol getSol() {
         return bestSol;
+    }
+
+    @Override
+    public String toString() {
+        return "GA{" +
+                "popSize=" + popSize +
+                ", muteRatio=" + muteRatio +
+                ", k=" + k +
+                '}';
     }
 }

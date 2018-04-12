@@ -6,39 +6,47 @@ import static java.util.Arrays.fill;
 /**
  * Soluçao do problema de empacotamento
  */
-public class Sol implements Comparable<Sol>{
+public class Sol implements Comparable<Sol> {
 
     /**
      * pacote do bin i
      */
     int binOf[];
 
-    /**numero de pacotes usados */
+    /**
+     * numero de pacotes usados
+     */
     int count;
 
-    /**desvio padrao*/
+    /**
+     * desvio padrao
+     */
     double stdDev;
 
-    /**somo dos pesos dos itens atribuidos a cada pacote */
+    /**
+     * soma dos pesos dos itens atribuidos a cada pacote
+     */
     int load[];
 
-    /**Atualiza os valores dos atributos count e stdDev*/
-    public void updateAtributes(){
+    /**
+     * Atualiza os valores dos atributos count e stdDev
+     */
+    public void updateAtributes() {
         count = 0;
 
         for (int i = 0; i < bpp.N; i++)
-            if(count < binOf[i])
+            if (count < binOf[i])
                 count = binOf[i];
 
-        load = new int[count+1];
+        load = new int[count + 1];
         for (int i = 0; i < bpp.N; i++)
             load[binOf[i]] += bpp.size[i];
 
-        double avg = bpp.sizeSum/count;
+        double avg = bpp.sizeSum / count;
 
         stdDev = 0;
         for (int i = 0; i < count; i++)
-            stdDev += (avg-load[i])*(avg-load[i]);
+            stdDev += (avg - load[i]) * (avg - load[i]);
 
 
     }
@@ -78,7 +86,7 @@ public class Sol implements Comparable<Sol>{
 
     @Override
     public String toString() {
-        return "Sol{ bins: " + binCount()+", "+
+        return "Sol{ bins: " + binCount() + ", " +
                 "binOf=" + Arrays.toString(binOf) +
                 '}';
     }
@@ -111,7 +119,7 @@ public class Sol implements Comparable<Sol>{
             if (binOf[i] == -1) {
                 int residuo = bpp.C - bpp.size[i];
                 binOf[i] = binCount;
-                for (int j = bpp.N-1; j > i; j--) {
+                for (int j = bpp.N - 1; j > i; j--) {
                     if (binOf[j] == -1 && bpp.size[j] <= residuo) {
                         binOf[j] = binCount;
                         residuo -= bpp.size[j];
@@ -144,13 +152,22 @@ public class Sol implements Comparable<Sol>{
         return binCount;
     }
 
-    public void copy(Sol s){
-        for (int i = 0; i < binOf.length; i++) {
+
+    public void copy(Sol s) {
+        for (int i = 0; i < binOf.length; i++)
             binOf[i] = s.binOf[i];
-        }
+
         this.count = s.count;
         this.stdDev = s.stdDev;
-        this.load = s.load.clone();
+
+        if (s.load != null) {
+            if (load == null || load.length != s.load.length)
+                this.load = s.load.clone();
+            else
+                for (int i = 0; i < s.load.length; i++)
+                    load[i] = s.load[i];
+        }
+
     }
 
     @Override
@@ -162,12 +179,14 @@ public class Sol implements Comparable<Sol>{
                 Objects.equals(bpp, sol.bpp);
     }
 
-
+    /**
+     * @return negativo se esta solução for melhor do que o parametro 'sol', positivo se pior e zero se igual
+     */
     @Override
     public int compareTo(Sol sol) {
-        if(this.count != sol.count){
-            return Integer.compare(this.count,sol.count);
+        if (this.count != sol.count) {
+            return Integer.compare(this.count, sol.count);
         }
-        return -Double.compare(this.stdDev,sol.stdDev);
+        return -Double.compare(this.stdDev, sol.stdDev);
     }
 }

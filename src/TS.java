@@ -12,6 +12,10 @@ public class TS implements Solver {
     LinkedList<Sol> list = new LinkedList<>();
 
 
+    /**
+     * @param ite    numero de ótimos locais até parar
+     * @param tenure quantidade de ótimos locais armazenados na memória tabu
+     */
     public TS(int ite, int tenure) {
         this.ite = ite;
         this.tenure = tenure;
@@ -170,7 +174,7 @@ public class TS implements Solver {
     }
 
     /**
-     * empacote os itens sem pacote (binof == -1) em ordem randomica
+     * empacota os itens sem pacote (binof == -1) em ordem randomica
      */
     private int fit(Sol sol) {
         int binOf[] = sol.binOf;
@@ -221,7 +225,9 @@ public class TS implements Solver {
         return soma;
     }
 
-
+    /**
+     * Hill climbing
+     */
     public int hc(Sol sol) {
         int count = sol.binCount();
         int binof[] = sol.binOf;
