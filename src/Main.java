@@ -49,7 +49,7 @@ public class Main {
 //        benchmark(dir, new SA(10000,1,.9999));
 //        benchmark(dir, new ILS(1000, 2));
 //        benchmark(dir, new TS(1000,1000));
-        benchmark(dir, new GA(100,.01,5));
+        benchmark(dir, new GA(100,.01,10,100000));
 
 //        BPP bpp = new BPP("instances/N4W2B1R4.txt");
 //        Sol sol = new Sol(bpp);

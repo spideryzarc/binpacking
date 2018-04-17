@@ -37,8 +37,9 @@ public class Sol implements Comparable<Sol> {
         for (int i = 0; i < bpp.N; i++)
             if (count < binOf[i])
                 count = binOf[i];
+        count++;
 
-        load = new int[count + 1];
+        load = new int[count];
         for (int i = 0; i < bpp.N; i++)
             load[binOf[i]] += bpp.size[i];
 
@@ -47,7 +48,6 @@ public class Sol implements Comparable<Sol> {
         stdDev = 0;
         for (int i = 0; i < count; i++)
             stdDev += (avg - load[i]) * (avg - load[i]);
-
 
     }
 
