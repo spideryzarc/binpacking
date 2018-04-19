@@ -16,7 +16,7 @@ public class Sol implements Comparable<Sol> {
     /**
      * numero de pacotes usados
      */
-    int count;
+    int binCount;
 
     /**
      * desvio padrao
@@ -29,25 +29,26 @@ public class Sol implements Comparable<Sol> {
     int load[];
 
     /**
-     * Atualiza os valores dos atributos count e stdDev
+     * Atualiza os valores dos atributos binCount e stdDev
      */
     public void updateAtributes() {
-        count = 0;
+        binCount = binCount();
 
-        for (int i = 0; i < bpp.N; i++)
-            if (count < binOf[i])
-                count = binOf[i];
-        count++;
+        if (load == null || load.length != binCount)
+            load = new int[binCount];
+        else
+            fill(load, 0);
 
-        load = new int[count];
         for (int i = 0; i < bpp.N; i++)
             load[binOf[i]] += bpp.size[i];
 
-        double avg = bpp.sizeSum / count;
+        double avg = bpp.sizeSum / binCount;
 
         stdDev = 0;
-        for (int i = 0; i < count; i++)
-            stdDev += (avg - load[i]) * (avg - load[i]);
+        for (int j = 0; j < binCount; j++) {
+            double x = avg - load[j];
+            stdDev += x * x;
+        }
 
     }
 
@@ -86,8 +87,9 @@ public class Sol implements Comparable<Sol> {
 
     @Override
     public String toString() {
-        return "Sol{ bins: " + binCount() + ", " +
-                "binOf=" + Arrays.toString(binOf) +
+        return "Sol{" +
+                "binCount=" + binCount +
+                ", stdDev=" + stdDev +
                 '}';
     }
 
@@ -157,7 +159,7 @@ public class Sol implements Comparable<Sol> {
         for (int i = 0; i < binOf.length; i++)
             binOf[i] = s.binOf[i];
 
-        this.count = s.count;
+        this.binCount = s.binCount;
         this.stdDev = s.stdDev;
 
         if (s.load != null) {
@@ -184,8 +186,8 @@ public class Sol implements Comparable<Sol> {
      */
     @Override
     public int compareTo(Sol sol) {
-        if (this.count != sol.count) {
-            return Integer.compare(this.count, sol.count);
+        if (this.binCount != sol.binCount) {
+            return Integer.compare(this.binCount, sol.binCount);
         }
         return -Double.compare(this.stdDev, sol.stdDev);
     }

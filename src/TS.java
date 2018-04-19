@@ -74,7 +74,7 @@ public class TS implements Solver {
             Utils.shuffler(idx);
 
             for (int pack : idx) {
-                //int pack = Utils.rd.nextInt(count);
+                //int pack = Utils.rd.nextInt(binCount);
                 int sobra = bpp.C - load[pack];
                 int x;
                 for (x = bpp.N - 1; x >= 0 && bpp.size[x] <= sobra; x--) {

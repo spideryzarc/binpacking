@@ -41,7 +41,7 @@ public class Main {
         String dir = "instances/Hard28";
 //        String dir = "instances/Wascher";
 //        benchmark(dir, new RMS(10));
-
+//        String dir = "instances";
 //        benchmark(dir, new VNS(100,10,5));
 //        benchmark(dir, new ILS(10, 100));
 //        benchmark(dir, new GRASP(50, 10));
@@ -49,7 +49,8 @@ public class Main {
 //        benchmark(dir, new SA(10000,1,.9999));
 //        benchmark(dir, new ILS(1000, 2));
 //        benchmark(dir, new TS(1000,1000));
-        benchmark(dir, new GA(100,.01,10,100000));
+        benchmark(dir, new GA(500, .7, 50, 5000));
+
 
 //        BPP bpp = new BPP("instances/N4W2B1R4.txt");
 //        Sol sol = new Sol(bpp);

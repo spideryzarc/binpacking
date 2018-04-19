@@ -62,7 +62,7 @@ public class VND {
                             for (int k = 0; k < binof.length; k++)
                                 load[binof[k]] += size[k];
 
-//                            System.out.println("mv1: " + count);
+//                            System.out.println("mv1: " + binCount);
                             bidx = new int[count];
                             for (int z = 0; z < count; z++)
                                 bidx[z] = z;

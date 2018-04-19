@@ -18,6 +18,7 @@ public class BPP {
      * capacidade dos pacotes
      */
     int C;
+
     /**Soma dos pesos dos itens */
     int sizeSum;
 
