@@ -125,7 +125,8 @@ public class GA implements Solver {
     }
 
 
-    private Sol crossover(Sol dad, Sol mom) {
+    public static Sol crossover(Sol dad, Sol mom) {
+        BPP bpp = dad.bpp;
         //determina os pontos de corte
         int a = bpp.N / 3;
         int b = 2 * a;

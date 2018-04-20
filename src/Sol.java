@@ -55,7 +55,7 @@ public class Sol implements Comparable<Sol> {
     /**
      * referencia para o problema de empacotamento
      */
-    private BPP bpp;
+    protected BPP bpp;
 
     public Sol(BPP bpp) {
         this.bpp = bpp;
@@ -190,5 +190,13 @@ public class Sol implements Comparable<Sol> {
             return Integer.compare(this.binCount, sol.binCount);
         }
         return -Double.compare(this.stdDev, sol.stdDev);
+    }
+
+    public int dist(Sol sol){
+        int c = 0;
+        for (int i = 0; i < bpp.N; i++)
+            if(binOf[i] != sol.binOf[i])
+                c++;
+        return c;
     }
 }
