@@ -172,6 +172,18 @@ public class Sol implements Comparable<Sol> {
 
     }
 
+    /**
+     * @return soma das violações de capacidade
+     */
+    public int violation() {
+        int v = 0;
+        for (int l : load) {
+            if (l > bpp.C)
+                v += l-bpp.C;
+        }
+        return v;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -192,10 +204,10 @@ public class Sol implements Comparable<Sol> {
         return -Double.compare(this.stdDev, sol.stdDev);
     }
 
-    public int dist(Sol sol){
+    public int dist(Sol sol) {
         int c = 0;
         for (int i = 0; i < bpp.N; i++)
-            if(binOf[i] != sol.binOf[i])
+            if (binOf[i] != sol.binOf[i])
                 c++;
         return c;
     }

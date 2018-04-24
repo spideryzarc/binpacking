@@ -38,8 +38,8 @@ public class Main {
 
     public static void main(String args[]) throws FileNotFoundException {
 //        String dir = "instances/Scholl/Scholl_1";
-//        String dir = "instances/Hard28";
-        String dir = "instances/Wascher";
+        String dir = "instances/Hard28";
+//        String dir = "instances/Wascher";
 //        benchmark(dir, new RMS(10));
 //        String dir = "instances";
 //        benchmark(dir, new VNS(100,10,5));
@@ -50,7 +50,7 @@ public class Main {
 //        benchmark(dir, new ILS(1000, 2));
 //        benchmark(dir, new TS(1000,1000));
 //        benchmark(dir, new GA(100, .5, 25, 5000));
-        benchmark(dir, new SS(50, 20));
+        benchmark(dir, new SSwPR(50, 20));
 
 
 //        BPP bpp = new BPP("instances/N4W2B1R4.txt");

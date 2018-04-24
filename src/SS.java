@@ -7,11 +7,11 @@ import java.util.Collections;
  * Scatter Search
  */
 public class SS implements Solver {
-    private BPP bpp;
-    private Sol bestSol;
+    BPP bpp;
+    Sol bestSol;
     public int popSize;
     public int eliteSize;
-    private int idx[];
+    int idx[];
 
     @Override
     public String toString() {
@@ -35,7 +35,7 @@ public class SS implements Solver {
 
     }
 
-    private void initPop(ArrayList<Sol> popini) {
+    void initPop(ArrayList<Sol> popini) {
         for (int i = 0; i < popSize; i++) {
             Sol sol = new Sol(bpp);
             VND vnd = new VND(bpp, sol);
@@ -95,7 +95,7 @@ public class SS implements Solver {
         return bestSol.binCount;
     }
 
-    private void eliteSelect(ArrayList<Sol> popini, ArrayList<Sol> elite) {
+    void eliteSelect(ArrayList<Sol> popini, ArrayList<Sol> elite) {
         Sol pivot = popini.get(0);
         for (Sol sol : popini)
             if (sol.compareTo(pivot) < 0)
