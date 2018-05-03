@@ -23,16 +23,21 @@ public class SSwPR extends SS {
         do {
             alterou = false;
             fori:
-            for (int i = 1; i < elite.size(); i++) {
+            for (int i = 1; i < eliteSize; i++) {
                 Sol si = elite.get(i);
                 for (int j = 0; j < i; j++) {
                     Sol sj = elite.get(j);
 
                     if (relinking(si, sj, elite)) {
                         alterou = true;
-                        break fori;
+                        // break fori;
                     }
                 }
+            }
+            if (alterou) {
+                Collections.sort(elite);
+                while (elite.size() > eliteSize)
+                    elite.remove(elite.size() - 1);
             }
             System.out.println(elite);
         } while (alterou);
@@ -61,11 +66,21 @@ public class SSwPR extends SS {
 
                     int violation = inter.violation();
                     if (violation == 0) {
+                        if (inter.load[interBi] == 0) {
+                            System.err.println("oba!");
+                            //elemina pacote vazio
+                            for (int k = 0; k < inter.binOf.length; k++)
+                                if (inter.binOf[k] > interBi)
+                                    inter.binOf[k]--;
+                            inter.updateAtributes();
+                        }
                         inter.updateAtributes();
                         if (!elite.contains(inter)
                                 && inter.compareTo(elite.get(eliteSize - 1)) < 0) {
                             Sol aux = new Sol(bpp);
                             aux.copy(inter);
+
+
                             elite.add(aux);
                             added = true;
                         }
@@ -93,11 +108,6 @@ public class SSwPR extends SS {
 
         } while (!inter.equals(sj));
 
-        if (added) {
-            Collections.sort(elite);
-            while (elite.size() > eliteSize)
-                elite.remove(elite.size() - 1);
-        }
 
         return added;
     }
